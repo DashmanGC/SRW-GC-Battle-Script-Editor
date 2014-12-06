@@ -21,6 +21,30 @@ If you want to turn ASCII text to SJIS (for example, after pasting it from a tex
 To save the changes, go to File -> Save As... option.
 
 
+*UPDATE for v1.3*
+
+Now the program has a "Navigate" menu with shortcuts for moving through the different messages. Beware, the hotkeys won't work if you're focused on one of the text areas (original or edit).
+
+More importantly, in the "File" menu you have now "Import from TXT" and "Export to TXT" options.
+
+"Export" writes all the unique occurrences of battle quotes along with their *first* existing edit to a text file of your choice.
+
+"Import" takes a file with the format of an exported txt, gathering all original-edit pairs in it. Then it applies the corresponding edits in the txt file to all the originals in the current bin file that match the originals in the txt file. For example, in your txt file you have the following:
+
+「遅い！」
+
+Too slow!
+
+So, if you import this file to your bin file, all quotes whose original text is "「遅い！」" will have their edited text set to "Too slow!".
+
+This function exists for 2 reasons:
+
+1) There's many entries where you have repeated quotes.
+
+2) You can export quotes from different SRW games and import them to your character, if those quotes are the same.
+
+
+
 OTHER STUFF
 ------------
 

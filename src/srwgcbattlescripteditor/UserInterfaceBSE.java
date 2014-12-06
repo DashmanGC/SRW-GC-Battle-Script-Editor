@@ -25,12 +25,22 @@ package srwgcbattlescripteditor;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
@@ -88,10 +98,18 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         menubarMain = new javax.swing.JMenuBar();
         menuFile = new javax.swing.JMenu();
         menuitemOpen = new javax.swing.JMenuItem();
+        jSeparator3 = new javax.swing.JPopupMenu.Separator();
+        menuitemImport = new javax.swing.JMenuItem();
+        menuitemExport = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         menuitemSave = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JSeparator();
         menuitemExit = new javax.swing.JMenuItem();
+        menuNavigate = new javax.swing.JMenu();
+        menuitemPrevious = new javax.swing.JMenuItem();
+        menuitemNext = new javax.swing.JMenuItem();
+        menuitemFirst = new javax.swing.JMenuItem();
+        menuitemLast = new javax.swing.JMenuItem();
         menuTools = new javax.swing.JMenu();
         menuitemConvert = new javax.swing.JMenuItem();
 
@@ -101,7 +119,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
 
         panelNavigation.setBorder(javax.swing.BorderFactory.createTitledBorder("Navigation"));
 
-        checkSJIS.setFont(new java.awt.Font("Tahoma", 1, 11));
+        checkSJIS.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         checkSJIS.setSelected(true);
         checkSJIS.setText("Convert keystrokes to SJIS");
         checkSJIS.addActionListener(new java.awt.event.ActionListener() {
@@ -110,7 +128,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             }
         });
 
-        buttonPrevious.setFont(new java.awt.Font("Tahoma", 1, 11));
+        buttonPrevious.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         buttonPrevious.setForeground(new java.awt.Color(51, 102, 255));
         buttonPrevious.setText("<<");
         buttonPrevious.setEnabled(false);
@@ -120,12 +138,12 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             }
         });
 
-        labelCurrent.setFont(new java.awt.Font("Tahoma", 1, 11));
+        labelCurrent.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         labelCurrent.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         labelCurrent.setText("0 / 0");
         labelCurrent.setEnabled(false);
 
-        buttonNext.setFont(new java.awt.Font("Tahoma", 1, 11));
+        buttonNext.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         buttonNext.setForeground(new java.awt.Color(51, 102, 255));
         buttonNext.setText(">>");
         buttonNext.setEnabled(false);
@@ -135,7 +153,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             }
         });
 
-        buttonJump.setFont(new java.awt.Font("Tahoma", 1, 11));
+        buttonJump.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         buttonJump.setText("GO!");
         buttonJump.setEnabled(false);
         buttonJump.addActionListener(new java.awt.event.ActionListener() {
@@ -151,7 +169,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             }
         });
 
-        labelJump.setFont(new java.awt.Font("Tahoma", 1, 11));
+        labelJump.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         labelJump.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         labelJump.setText("Jump to:");
         labelJump.setEnabled(false);
@@ -163,7 +181,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             .addGroup(panelNavigationLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(checkSJIS)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 105, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(buttonPrevious, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(labelCurrent, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -217,6 +235,27 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             }
         });
         menuFile.add(menuitemOpen);
+        menuFile.add(jSeparator3);
+
+        menuitemImport.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        menuitemImport.setText("Import lines from txt file...");
+        menuitemImport.setEnabled(false);
+        menuitemImport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuitemImportActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuitemImport);
+
+        menuitemExport.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        menuitemExport.setText("Export lines to txt file...");
+        menuitemExport.setEnabled(false);
+        menuitemExport.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuitemExportActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuitemExport);
         menuFile.add(jSeparator1);
 
         menuitemSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
@@ -229,6 +268,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         menuFile.add(menuitemSave);
         menuFile.add(jSeparator2);
 
+        menuitemExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.CTRL_MASK));
         menuitemExit.setText("Exit");
         menuitemExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -238,6 +278,46 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         menuFile.add(menuitemExit);
 
         menubarMain.add(menuFile);
+
+        menuNavigate.setText("Navigate");
+
+        menuitemPrevious.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PAGE_UP, 0));
+        menuitemPrevious.setText("Previous");
+        menuitemPrevious.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuitemPreviousActionPerformed(evt);
+            }
+        });
+        menuNavigate.add(menuitemPrevious);
+
+        menuitemNext.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_PAGE_DOWN, 0));
+        menuitemNext.setText("Next");
+        menuitemNext.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuitemNextActionPerformed(evt);
+            }
+        });
+        menuNavigate.add(menuitemNext);
+
+        menuitemFirst.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_HOME, java.awt.event.InputEvent.CTRL_MASK));
+        menuitemFirst.setText("First");
+        menuitemFirst.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuitemFirstActionPerformed(evt);
+            }
+        });
+        menuNavigate.add(menuitemFirst);
+
+        menuitemLast.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_END, java.awt.event.InputEvent.CTRL_MASK));
+        menuitemLast.setText("Last");
+        menuitemLast.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuitemLastActionPerformed(evt);
+            }
+        });
+        menuNavigate.add(menuitemLast);
+
+        menubarMain.add(menuNavigate);
 
         menuTools.setText("Tools");
 
@@ -261,7 +341,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(scrollLines, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 824, Short.MAX_VALUE)
+                    .addComponent(scrollLines, javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelNavigation, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -271,7 +351,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(panelNavigation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(scrollLines, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
+                .addComponent(scrollLines)
                 .addContainerGap())
         );
 
@@ -367,6 +447,61 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_menuitemSaveActionPerformed
+
+    private void menuitemPreviousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuitemPreviousActionPerformed
+        // TODO add your handling code here:
+        if (buttonPrevious.isEnabled())
+        buttonPrevious.doClick();
+    }//GEN-LAST:event_menuitemPreviousActionPerformed
+
+    private void menuitemNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuitemNextActionPerformed
+        // TODO add your handling code here:
+        if (buttonNext.isEnabled())
+        buttonNext.doClick();
+    }//GEN-LAST:event_menuitemNextActionPerformed
+
+    private void menuitemFirstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuitemFirstActionPerformed
+        // TODO add your handling code here:
+        jumpTo(0);
+    }//GEN-LAST:event_menuitemFirstActionPerformed
+
+    private void menuitemLastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuitemLastActionPerformed
+        // TODO add your handling code here:
+        if (!lines.isEmpty())
+        jumpTo(lines.size());
+    }//GEN-LAST:event_menuitemLastActionPerformed
+
+    private void menuitemImportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuitemImportActionPerformed
+        // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File(lastDirectory));
+        chooser.setDialogTitle("Import from TXT file");
+        chooser.setFileFilter(new FileNameExtensionFilter("TXT file", "TXT"));
+
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+            saveDialogue();
+        
+            importTXT(chooser.getSelectedFile().getParent(), chooser.getSelectedFile().getName());
+
+            lastDirectory = chooser.getSelectedFile().getPath();
+            
+            loadDialogue();
+        }
+    }//GEN-LAST:event_menuitemImportActionPerformed
+
+    private void menuitemExportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuitemExportActionPerformed
+        // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File(lastDirectory));
+        chooser.setDialogTitle("Export to TXT file");
+        chooser.setFileFilter(new FileNameExtensionFilter("TXT file", "TXT"));
+
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+            exportTXT(chooser.getSelectedFile().getAbsolutePath());
+
+            lastDirectory = chooser.getSelectedFile().getPath();
+        }
+    }//GEN-LAST:event_menuitemExportActionPerformed
 
     /**
     * @param args the command line arguments
@@ -681,6 +816,10 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             labelJump.setEnabled(true);
             textfieldJump.setEnabled(true);
             buttonJump.setEnabled(true);
+            
+            // Enable import option
+            menuitemImport.setEnabled(true);
+            menuitemExport.setEnabled(true);
 
             // Load first set of lines
             current_dialogue = 0;
@@ -690,6 +829,157 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         }catch (IOException ex){
             System.err.print("ERROR: Couldn't read " + filename);
         }
+    }
+    
+    
+    public void importTXT(String absolute_path, String filename){
+        try {
+            String original = "";
+            String translated = "";
+            String line;
+            boolean read_translated = false;
+            //BufferedReader br = new BufferedReader(new FileReader(filename));
+            Path path = FileSystems.getDefault().getPath(absolute_path, filename);
+            BufferedReader br = Files.newBufferedReader(path, Charset.forName(font_encoding));
+            
+            Map <String, String> map = new TreeMap();
+            
+            // Acquire all original - translated pairs in the TXT file and store them in the map
+            while( (line = br.readLine()) != null){
+                if (line.isEmpty() || line.startsWith("//")){   // Empty line or comment
+                    if (read_translated){
+                        if (!translated.isEmpty()){ // The translated line is finished. Store the pair
+                            map.put(original, convertToSJIS(translated) );
+                            
+                            //System.out.println("Original: " + original);
+                            //System.out.println("Translated: " + translated);
+                            
+                            // Empty the auxiliary strings
+                            original = "";
+                            translated = "";
+                            
+                            read_translated = false;    // Start again
+                        }
+                    }
+                    else{
+                        if (!original.isEmpty()){  // The original line is finished. Start searching for the translated line
+                            read_translated = true;
+                        }
+                    }
+                }
+                else{   // Text line
+                    if (read_translated){   // Add the line to the translated text
+                        if(translated.isEmpty())
+                            translated = line;
+                        else
+                            translated += "\n" + line;
+                    }
+                    else{   // Add the line to the original text
+                        // We trim the lines and ignore line breaks. This way we ignore special formats from other games
+                        // * trim() doesn't get rid of SJIS full-width spaces (U+3000)
+                        //original += line.trim();
+                        int counter = 0;
+                        
+                        while(line.charAt(counter) == '　')
+                            counter++;
+                        
+                        original += line.substring(counter);
+                    }
+                }
+            }
+            
+            if (!translated.isEmpty()){ // There was no empty line after the last translated line
+                map.put(original, convertToSJIS(translated));
+                
+                //System.out.println("Original: " + original);
+                //System.out.println("Translated: " + translated);
+            }
+            
+            // For all of our lines, if the original is in the map, change the translated line to the one in the map
+            for (int i = 0; i < lines.size(); i++){
+                for (int j = 0; j < lines.get(i).size(); j++){
+                    String[] aux_lines = lines.get(i).get(j).originalText.split("\n");
+                    String aux = "";
+                    
+                    for (int k = 0; k < aux_lines.length; k++){
+                        //aux += aux_lines[k].trim();
+                        int counter = 0;
+                        
+                        while(aux_lines[k].charAt(counter) == '　')
+                            counter++;
+                        
+                        aux += aux_lines[k].substring(counter);
+                    }
+                    
+                    //System.out.println("Checking: " + aux);
+                    
+                    line = map.get(aux);
+                    
+                    if (line != null){
+                        lines.get(i).get(j).editText = line;
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(UserInterfaceBSE.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
+    public void exportTXT(String filename){
+        try {
+            if (!filename.endsWith(".txt") && !filename.endsWith(".TXT"))
+                filename += ".txt";
+            
+            FileOutputStream fos = new FileOutputStream(filename);
+            Writer out = new OutputStreamWriter(fos, font_encoding);
+            
+            Map<String, String> map = new TreeMap();
+            
+            
+            for (int i = 0; i < lines.size(); i++){
+                for (int j = 0; j < lines.get(i).size(); j++){
+                    if (map.get(lines.get(i).get(j).originalText) == null){ // Quote hasn't been written before
+                        out.write(lines.get(i).get(j).originalText + "\n\n" + lines.get(i).get(j).editText + "\n\n");
+                        
+                        map.put(lines.get(i).get(j).originalText, lines.get(i).get(j).editText);
+                    }
+                }
+            }
+            
+            out.close();
+            
+            JOptionPane.showMessageDialog(null, "Exported battle quotes:" + map.size(),
+                    "Done", JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException e) {
+            e.printStackTrace();
+}
+    }
+    
+    
+    public String convertToSJIS(String text){
+        String newText = "";
+        PanelBLine pbl = new PanelBLine();  // We just need this for the charToSJIS function
+
+        for (int i = 0; i < text.length(); i++){
+            char c = text.charAt(i);
+            byte[] sjis_char = pbl.charToSJIS(c);
+
+            if (sjis_char[0] != 0){
+                try {
+                    String new_char = new String(sjis_char, font_encoding);
+
+                    newText += new_char;
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(PanelBLine.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            else{
+                newText += c;
+            }
+        }
+
+        return newText;
     }
 
 
@@ -811,13 +1101,15 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             pbl.setBounds(offX, i*215 + offY, 790, 207);
             //pbl.repaint();
             panelLines.add(pbl);
+            
+            //pbl.repaint();
 
             totalHeight += 215;
         }
 
         panelLines.setPreferredSize(new Dimension(panelLines.getWidth() - 20, totalHeight));
         panelLines.repaint();
-        scrollLines.repaint();
+        //scrollLines.repaint();
     }
 
 
@@ -910,14 +1202,22 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
     private javax.swing.JCheckBox checkSJIS;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
+    private javax.swing.JPopupMenu.Separator jSeparator3;
     private javax.swing.JLabel labelCurrent;
     private javax.swing.JLabel labelJump;
     private javax.swing.JMenu menuFile;
+    private javax.swing.JMenu menuNavigate;
     private javax.swing.JMenu menuTools;
     private javax.swing.JMenuBar menubarMain;
     private javax.swing.JMenuItem menuitemConvert;
     private javax.swing.JMenuItem menuitemExit;
+    private javax.swing.JMenuItem menuitemExport;
+    private javax.swing.JMenuItem menuitemFirst;
+    private javax.swing.JMenuItem menuitemImport;
+    private javax.swing.JMenuItem menuitemLast;
+    private javax.swing.JMenuItem menuitemNext;
     private javax.swing.JMenuItem menuitemOpen;
+    private javax.swing.JMenuItem menuitemPrevious;
     private javax.swing.JMenuItem menuitemSave;
     private javax.swing.JPanel panelLines;
     private javax.swing.JPanel panelNavigation;
