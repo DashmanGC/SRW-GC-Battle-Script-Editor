@@ -1178,6 +1178,9 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
 
             // Write everything into the file
             RandomAccessFile f = new RandomAccessFile(filename, "rw");
+            
+            // Truncate the file (in case we're overwriting)
+            f.setLength(0);
 
             f.write(header);
             f.write(table);
