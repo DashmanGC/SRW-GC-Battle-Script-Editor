@@ -100,6 +100,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         menuitemOpen = new javax.swing.JMenuItem();
         jSeparator3 = new javax.swing.JPopupMenu.Separator();
         menuitemImport = new javax.swing.JMenuItem();
+        menuitemImportSimplified = new javax.swing.JMenuItem();
         menuitemExport = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JSeparator();
         menuitemSave = new javax.swing.JMenuItem();
@@ -246,6 +247,16 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             }
         });
         menuFile.add(menuitemImport);
+
+        menuitemImportSimplified.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_I, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        menuitemImportSimplified.setText("Import simplified lines from txt file...");
+        menuitemImportSimplified.setEnabled(false);
+        menuitemImportSimplified.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuitemImportSimplifiedActionPerformed(evt);
+            }
+        });
+        menuFile.add(menuitemImportSimplified);
 
         menuitemExport.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         menuitemExport.setText("Export lines to txt file...");
@@ -481,7 +492,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
             saveDialogue();
         
-            importTXT(chooser.getSelectedFile().getParent(), chooser.getSelectedFile().getName());
+            importTXT(chooser.getSelectedFile().getParent(), chooser.getSelectedFile().getName(), false);
 
             lastDirectory = chooser.getSelectedFile().getPath();
             
@@ -497,11 +508,29 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         chooser.setFileFilter(new FileNameExtensionFilter("TXT file", "TXT"));
 
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
-            exportTXT(chooser.getSelectedFile().getAbsolutePath());
-
             lastDirectory = chooser.getSelectedFile().getPath();
+            
+            exportTXT(chooser.getSelectedFile().getAbsolutePath());
         }
     }//GEN-LAST:event_menuitemExportActionPerformed
+
+    private void menuitemImportSimplifiedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuitemImportSimplifiedActionPerformed
+        // TODO add your handling code here:
+        JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File(lastDirectory));
+        chooser.setDialogTitle("Import from TXT file");
+        chooser.setFileFilter(new FileNameExtensionFilter("TXT file", "TXT"));
+
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+            saveDialogue();
+        
+            importTXT(chooser.getSelectedFile().getParent(), chooser.getSelectedFile().getName(), true);
+
+            lastDirectory = chooser.getSelectedFile().getPath();
+            
+            loadDialogue();
+        }
+    }//GEN-LAST:event_menuitemImportSimplifiedActionPerformed
 
     /**
     * @param args the command line arguments
@@ -819,6 +848,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             
             // Enable import option
             menuitemImport.setEnabled(true);
+            menuitemImportSimplified.setEnabled(true);
             menuitemExport.setEnabled(true);
 
             // Load first set of lines
@@ -832,7 +862,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
     }
     
     
-    public void importTXT(String absolute_path, String filename){
+    public void importTXT(String absolute_path, String filename, boolean simplified){
         try {
             String original = "";
             String translated = "";
@@ -875,15 +905,27 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
                             translated += "\n" + line;
                     }
                     else{   // Add the line to the original text
-                        // We trim the lines and ignore line breaks. This way we ignore special formats from other games
-                        // * trim() doesn't get rid of SJIS full-width spaces (U+3000)
-                        //original += line.trim();
-                        int counter = 0;
-                        
-                        while(line.charAt(counter) == '　')
-                            counter++;
-                        
-                        original += line.substring(counter);
+                        if (simplified){
+                            // We get rid of any SJIS punctuation and the 'っ' character
+                            for (int i = 0; i < line.length(); i++){
+                                char c = line.charAt(i);
+                                if ( c != '　' && c != '「' && c != '」' && c != '、' && c != '！' && c != '？' && c != '…' && c != '。'   // SJIS punctuation
+                                      && c != 'っ'  && c != 'ー'  && c != 'ぁ'  && c != 'ぇ'  && c != 'ぃ'  && c != 'ぉ'  && c != 'ぅ'    // SJIS small hiragana
+                                      && c != ' ' && c != '!' && c != '?' && c != '.' && c != ',') // ASCII punctuation (in case it got converted)
+                                     original += c;
+                            }
+                        }
+                        else{
+                            // We trim the lines and ignore line breaks. This way we ignore special formats from other games
+                            // * trim() doesn't get rid of SJIS full-width spaces (U+3000)
+                            //original += line.trim();
+                            int counter = 0;
+
+                            while(line.charAt(counter) == '　')
+                                counter++;
+
+                            original += line.substring(counter);
+                        }
                     }
                 }
             }
@@ -903,12 +945,24 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
                     
                     for (int k = 0; k < aux_lines.length; k++){
                         //aux += aux_lines[k].trim();
-                        int counter = 0;
-                        
-                        while(aux_lines[k].charAt(counter) == '　')
-                            counter++;
-                        
-                        aux += aux_lines[k].substring(counter);
+                        if (simplified){
+                            // We get rid of any SJIS punctuation and the 'っ' character
+                            for (int l = 0; l < aux_lines[k].length(); l++){
+                                char c = aux_lines[k].charAt(l);
+                                if ( c != '　' && c != '「' && c != '」' && c != '、' && c != '！' && c != '？' && c != '…' && c != '。'   // SJIS punctuation
+                                      && c != 'っ'  && c != 'ー'  && c != 'ぁ'  && c != 'ぇ'  && c != 'ぃ'  && c != 'ぉ'  && c != 'ぅ'    // SJIS small hiragana
+                                      && c != ' ' && c != '!' && c != '?' && c != '.' && c != ',') // ASCII punctuation (in case it got converted)
+                                     aux += c;
+                            }
+                        }
+                        else{
+                            int counter = 0;
+
+                            while(aux_lines[k].charAt(counter) == '　')
+                                counter++;
+
+                            aux += aux_lines[k].substring(counter);
+                        }
                     }
                     
                     //System.out.println("Checking: " + aux);
@@ -928,8 +982,11 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
     
     public void exportTXT(String filename){
         try {
-            if (!filename.endsWith(".txt") && !filename.endsWith(".TXT"))
+            if (!filename.endsWith(".txt") && !filename.endsWith(".TXT")){
                 filename += ".txt";
+                
+                //lastDirectory += ".txt";
+            }
             
             FileOutputStream fos = new FileOutputStream(filename);
             Writer out = new OutputStreamWriter(fos, font_encoding);
@@ -940,9 +997,13 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             for (int i = 0; i < lines.size(); i++){
                 for (int j = 0; j < lines.get(i).size(); j++){
                     if (map.get(lines.get(i).get(j).originalText) == null){ // Quote hasn't been written before
-                        out.write(lines.get(i).get(j).originalText + "\n\n" + lines.get(i).get(j).editText + "\n\n");
+                        String edited = convertToASCII (lines.get(i).get(j).editText);
                         
-                        map.put(lines.get(i).get(j).originalText, lines.get(i).get(j).editText);
+                        //out.write(lines.get(i).get(j).originalText + "\n\n" + lines.get(i).get(j).editText + "\n\n");
+                        out.write(lines.get(i).get(j).originalText + "\n\n" + edited + "\n\n");
+                        
+                        //map.put(lines.get(i).get(j).originalText, lines.get(i).get(j).editText);
+                        map.put(lines.get(i).get(j).originalText, edited);
                     }
                 }
             }
@@ -957,6 +1018,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
     }
     
     
+    // Converts ASCII text in SJIS text
     public String convertToSJIS(String text){
         String newText = "";
         PanelBLine pbl = new PanelBLine();  // We just need this for the charToSJIS function
@@ -980,6 +1042,134 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         }
 
         return newText;
+    }
+    
+    
+    // Converts SJIS text in ASCII text (only common characters)
+    public String convertToASCII(String text){
+        String newText = "";
+        //PanelBLine pbl = new PanelBLine();  // We just need this for the charToSJIS function
+
+        for (int i = 0; i < text.length(); i++){
+            char c = text.charAt(i);
+            //byte[] sjis_char = pbl.charToSJIS(c);
+            char ascii_char = SJIStoASCII(c);
+
+            /*if (sjis_char[0] != 0){
+                try {
+                    String new_char = new String(sjis_char, font_encoding);
+
+                    newText += new_char;
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(PanelBLine.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            else{
+                newText += c;
+            }*/
+            newText += ascii_char;
+        }
+
+        return newText;
+    }
+    
+    
+    // Converts a SJIS char to ASCII
+    public char SJIStoASCII(char c){
+        char newChar = ' ';
+        
+        // SJIS characters
+        char char_a = 'ａ';
+        char char_z = 'ｚ';
+        char char_A = 'Ａ';
+        char char_Z = 'Ｚ';
+        
+        if (c >= char_A && c <= char_Z){
+            int difference = c - char_A;
+            newChar = 'A';
+            newChar += difference;
+        }
+        else{ 
+            if (c >= char_a && c <= char_z){
+                int difference = c - char_a;
+                newChar = 'a';
+                newChar += difference;
+            }
+            else{
+                switch (c){
+                    case '　':
+                        newChar = ' ';
+                        break;
+                    case '！':
+                        newChar = '!';
+                        break;
+                    case '″':
+                        newChar = '\"';
+                        break;
+                    case '＃':
+                        newChar = '#';
+                        break;
+                    case '％':
+                        newChar = '%';
+                        break;
+                    case '＆':
+                        newChar = '&';
+                        break;
+                    case '′':
+                        newChar = '\'';
+                        break;
+                    case '（':
+                        newChar = '(';
+                        break;
+                    case '）':
+                        newChar = ')';
+                        break;
+                    case '＊':
+                        newChar = '*';
+                        break;
+                    case '＋':
+                        newChar = '+';
+                        break;
+                    case '，':
+                        newChar = ',';
+                        break;
+                    case '−':
+                        newChar = '-';
+                        break;
+                    case '．':
+                        newChar = '.';
+                        break;
+                    case '／':
+                        newChar = '/';
+                        break;
+                    case '：':
+                        newChar = ':';
+                        break;
+                    case '；':
+                        newChar = ';';
+                        break;
+                    case '＜':
+                        newChar = '<';
+                        break;
+                    case '＝':
+                        newChar = '=';
+                        break;
+                    case '＞':
+                        newChar = '>';
+                        break;
+                    case '？':
+                        newChar = '?';
+                        break;
+                    case '＠':
+                        newChar = '@';
+                        break;
+                    default:    // Leave the character as SJIS if it's none of the others
+                        newChar = c;
+                }
+            }
+        }
+        
+        return newChar;
     }
 
 
@@ -1217,6 +1407,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuitemExport;
     private javax.swing.JMenuItem menuitemFirst;
     private javax.swing.JMenuItem menuitemImport;
+    private javax.swing.JMenuItem menuitemImportSimplified;
     private javax.swing.JMenuItem menuitemLast;
     private javax.swing.JMenuItem menuitemNext;
     private javax.swing.JMenuItem menuitemOpen;

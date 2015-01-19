@@ -44,6 +44,20 @@ This function exists for 2 reasons:
 2) You can export quotes from different SRW games and import them to your character, if those quotes are the same.
 
 
+*UPDATE for v1.3b*
+
+There's now an "import simplified" function that does the same as the normal import, but ignores punctuation and small hiragana characters for the original quote.
+
+This means that if your text file has:
+
+「この！」
+
+Bastard!
+
+And the bin file has entries for 「この！」, 「この…」 and 「このっ！」, they all will get the translation "Bastard!".
+
+This function exists to facilitate importation of quotes from other SRW games, since the differences are usually in punctuation. Use along with the other import function for better results.
+
 
 OTHER STUFF
 ------------
