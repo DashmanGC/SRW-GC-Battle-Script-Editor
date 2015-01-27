@@ -662,12 +662,18 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
 
                     //System.out.println("Portrait: " + bl.portrait);
 
-                    // Next 8 bytes SHOULD always be 0
+                    // Next 8 bytes is 0 in most cases
                     // We check, just in case...
+                    byte[] status_modifier = new byte[8];
+                    
                     for(int j = 0; j < 8; j++){
-                        if (entries[i][offset + j] != 0)
-                            System.out.println("Entry " + i + ", byte " + (offset + j) + " is NOT zero.");
+                        if (entries[i][offset + j] != 0){
+                            status_modifier[j] = entries[i][offset + j];
+                            System.out.println("(Status) Entry " + i + ", byte " + (offset + j) + " is NOT zero.");
+                        }
                     }
+                    
+                    bl.status_modifier = status_modifier;
                     offset += 8;
 
                     // Next 4 bytes indicate the status of the unit during the line
@@ -727,10 +733,16 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
 
                         // Next 2 bytes SHOULD always be 0
                         // We check, just in case...
+                        byte[] voice_modifier = new byte[2];
+                        
                         for(int j = 0; j < 2; j++){
-                            if (entries[i][offset + j] != 0)
-                                System.out.println("Entry " + i + ", byte " + (offset + j) + " is NOT zero.");
+                            if (entries[i][offset + j] != 0){
+                                voice_modifier[j] = entries[i][offset + j];
+                                System.out.println("(Voice) Entry " + i + ", byte " + (offset + j) + " is NOT zero.");
+                            }
                         }
+                        
+                        bl.voice_modifier = voice_modifier;
                         offset += 2;
                     }
                     else

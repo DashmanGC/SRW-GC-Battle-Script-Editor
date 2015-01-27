@@ -34,6 +34,8 @@ public class BattleLine {
         String originalText;
         String editText;
         byte[] extra;
+        byte[] status_modifier;
+        byte[] voice_modifier;
         
         String font_encoding = "MS932";
 
@@ -45,6 +47,8 @@ public class BattleLine {
             originalText = "";
             editText = "";
             extra = null;
+            status_modifier = new byte[8];
+            voice_modifier = new byte[2];
         }
 
         // Return the battle line as a byte array with the format used in the BIN files.
@@ -85,6 +89,15 @@ public class BattleLine {
             beginning[10] = (byte) ( (portrait >> 16) & 0xff);
             beginning[11] = (byte) ( (portrait >> 24) & 0xff);
 
+            beginning[12] = status_modifier[0];
+            beginning[13] = status_modifier[1];
+            beginning[14] = status_modifier[2];
+            beginning[15] = status_modifier[3];
+            beginning[16] = status_modifier[4];
+            beginning[17] = status_modifier[5];
+            beginning[18] = status_modifier[6];
+            beginning[19] = status_modifier[7];
+            
             beginning[20] = (byte) (status & 0xff);
 
             char_section[0] = (byte) (0x81 & 0xff);
@@ -103,6 +116,9 @@ public class BattleLine {
                 voice_section[5] = (byte) ( (voice >> 8) & 0xff);
                 voice_section[6] = (byte) ( (voice >> 16) & 0xff);
                 voice_section[7] = (byte) ( (voice >> 24) & 0xff);
+                
+                voice_section[8] = voice_modifier[0];
+                voice_section[9] = voice_modifier[1];                
             }
 
             // Join everything
