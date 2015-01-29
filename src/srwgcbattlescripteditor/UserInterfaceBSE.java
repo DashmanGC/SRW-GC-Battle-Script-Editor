@@ -112,7 +112,10 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         menuitemFirst = new javax.swing.JMenuItem();
         menuitemLast = new javax.swing.JMenuItem();
         menuTools = new javax.swing.JMenu();
-        menuitemConvert = new javax.swing.JMenuItem();
+        menuitemConvertSJIS = new javax.swing.JMenuItem();
+        menuitemConvertASCII = new javax.swing.JMenuItem();
+        menuitemConvertAllSJIS = new javax.swing.JMenuItem();
+        menuitemConvertAllASCII = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SRW GC Battle Script Editor by Dashman");
@@ -121,7 +124,6 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         panelNavigation.setBorder(javax.swing.BorderFactory.createTitledBorder("Navigation"));
 
         checkSJIS.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        checkSJIS.setSelected(true);
         checkSJIS.setText("Convert keystrokes to SJIS");
         checkSJIS.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -332,14 +334,41 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
 
         menuTools.setText("Tools");
 
-        menuitemConvert.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
-        menuitemConvert.setText("Convert edited text to SJIS");
-        menuitemConvert.addActionListener(new java.awt.event.ActionListener() {
+        menuitemConvertSJIS.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        menuitemConvertSJIS.setText("Convert edited text to SJIS");
+        menuitemConvertSJIS.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuitemConvertActionPerformed(evt);
+                menuitemConvertSJISActionPerformed(evt);
             }
         });
-        menuTools.add(menuitemConvert);
+        menuTools.add(menuitemConvertSJIS);
+
+        menuitemConvertASCII.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        menuitemConvertASCII.setText("Convert edited text to ASCII");
+        menuitemConvertASCII.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuitemConvertASCIIActionPerformed(evt);
+            }
+        });
+        menuTools.add(menuitemConvertASCII);
+
+        menuitemConvertAllSJIS.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_K, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        menuitemConvertAllSJIS.setText("Convert ALL text to SJIS");
+        menuitemConvertAllSJIS.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuitemConvertAllSJISActionPerformed(evt);
+            }
+        });
+        menuTools.add(menuitemConvertAllSJIS);
+
+        menuitemConvertAllASCII.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        menuitemConvertAllASCII.setText("Convert ALL text to ASCII");
+        menuitemConvertAllASCII.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuitemConvertAllASCIIActionPerformed(evt);
+            }
+        });
+        menuTools.add(menuitemConvertAllASCII);
 
         menubarMain.add(menuTools);
 
@@ -380,6 +409,8 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         chooser.setCurrentDirectory(new java.io.File(lastDirectory));
         chooser.setDialogTitle("Load BIN file");
         chooser.setFileFilter(new FileNameExtensionFilter("BIN file", "BIN"));
+            if (!current_file.isEmpty())
+                chooser.setSelectedFile(new File(current_file));
 
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
             openBIN(chooser.getSelectedFile().getAbsolutePath());
@@ -423,7 +454,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_checkSJISActionPerformed
 
-    private void menuitemConvertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuitemConvertActionPerformed
+    private void menuitemConvertSJISActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuitemConvertSJISActionPerformed
         // TODO add your handling code here:
         Component[] blines = panelLines.getComponents();
 
@@ -431,7 +462,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             PanelBLine bl = (PanelBLine) blines[i];
             bl.convertToSJIS();
         }
-    }//GEN-LAST:event_menuitemConvertActionPerformed
+    }//GEN-LAST:event_menuitemConvertSJISActionPerformed
 
     private void menuitemSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuitemSaveActionPerformed
         // TODO add your handling code here:
@@ -531,6 +562,43 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             loadDialogue();
         }
     }//GEN-LAST:event_menuitemImportSimplifiedActionPerformed
+
+    private void menuitemConvertASCIIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuitemConvertASCIIActionPerformed
+        // TODO add your handling code here:
+        Component[] blines = panelLines.getComponents();
+
+        for (int i = 0; i < blines.length; i++){
+            PanelBLine bl = (PanelBLine) blines[i];
+            //bl.convertToSJIS();
+            bl.setEditText(convertToASCII(bl.getEditText()));
+        }
+    }//GEN-LAST:event_menuitemConvertASCIIActionPerformed
+
+    private void menuitemConvertAllASCIIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuitemConvertAllASCIIActionPerformed
+        // TODO add your handling code here:
+        saveDialogue();
+        
+        for (int i = 0; i < lines.size(); i++){
+            for (int j = 0; j < lines.get(i).size(); j++){
+                lines.get(i).get(j).editText = convertToASCII(lines.get(i).get(j).editText);
+            }
+        }
+        
+        loadDialogue();
+    }//GEN-LAST:event_menuitemConvertAllASCIIActionPerformed
+
+    private void menuitemConvertAllSJISActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuitemConvertAllSJISActionPerformed
+        // TODO add your handling code here:
+        saveDialogue();
+        
+        for (int i = 0; i < lines.size(); i++){
+            for (int j = 0; j < lines.get(i).size(); j++){
+                lines.get(i).get(j).editText = convertToSJIS(lines.get(i).get(j).editText);
+            }
+        }        
+        
+        loadDialogue();
+    }//GEN-LAST:event_menuitemConvertAllSJISActionPerformed
 
     /**
     * @param args the command line arguments
@@ -891,7 +959,8 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
                 if (line.isEmpty() || line.startsWith("//")){   // Empty line or comment
                     if (read_translated){
                         if (!translated.isEmpty()){ // The translated line is finished. Store the pair
-                            map.put(original, convertToSJIS(translated) );
+                            //map.put(original, convertToSJIS(translated) );
+                            map.put(original, translated);
                             
                             //System.out.println("Original: " + original);
                             //System.out.println("Translated: " + translated);
@@ -943,7 +1012,8 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
             }
             
             if (!translated.isEmpty()){ // There was no empty line after the last translated line
-                map.put(original, convertToSJIS(translated));
+                //map.put(original, convertToSJIS(translated));
+                map.put(original, translated);
                 
                 //System.out.println("Original: " + original);
                 //System.out.println("Translated: " + translated);
@@ -1414,7 +1484,10 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
     private javax.swing.JMenu menuNavigate;
     private javax.swing.JMenu menuTools;
     private javax.swing.JMenuBar menubarMain;
-    private javax.swing.JMenuItem menuitemConvert;
+    private javax.swing.JMenuItem menuitemConvertASCII;
+    private javax.swing.JMenuItem menuitemConvertAllASCII;
+    private javax.swing.JMenuItem menuitemConvertAllSJIS;
+    private javax.swing.JMenuItem menuitemConvertSJIS;
     private javax.swing.JMenuItem menuitemExit;
     private javax.swing.JMenuItem menuitemExport;
     private javax.swing.JMenuItem menuitemFirst;

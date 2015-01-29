@@ -1529,9 +1529,9 @@ public class PanelBLine extends javax.swing.JPanel {
                 for (int j = 0; j < lines[i].length(); j++){
                     char c = lines[i].charAt(j);
                     if (c < '　')   // Empty space in SJIS, pretty much the first possible character in SJIS
-                        line_size += 10;    // We add the width of an ASCII character
+                        line_size += VWF(c, true);    // We add the width of an ASCII character
                     else
-                        line_size += VWF(c);    // We add the width of a SJIS character
+                        line_size += VWF(c, false);    // We add the width of a SJIS character
                 }
 
                 if (line_size > width)
@@ -1546,35 +1546,46 @@ public class PanelBLine extends javax.swing.JPanel {
             labelWidthCurrent.setForeground(new Color(0, 0, 0));
     }
 
-    public int VWF(char c){
+    
+    public int VWF(char c, boolean ASCII){
         int width = 18;
+        if (ASCII)
+            width = 10;
 
         switch (c){
             case '　':
+            case ' ':
                 width = 6;
                 break;
             case '，':
+            case ',':
                 width = 5;
                 break;
             case '．':
+            case '.':
                 width = 4;
                 break;
             case '：':
+            case ':':
                 width = 4;
                 break;
             case '；':
+            case ';':
                 width = 5;
                 break;
             case '？':
+            case '?':
                 width = 9;
                 break;
             case '！':
+            case '!':
                 width = 4;
                 break;
             case '‐':
                 width = 7;
                 break;
             case '／':
+            case '/':
                 width = 10;
                 break;
             case '＼':
@@ -1582,30 +1593,39 @@ public class PanelBLine extends javax.swing.JPanel {
                 break;
 
             case '～':
+            case '~':
                 width = 10;
                 break;
             case '（':
+            case '(':
                 width = 6;
                 break;
             case '）':
+            case ')':
                 width = 6;
                 break;
             case '［':
+            case '[':
                 width = 6;
                 break;
             case '］':
+            case ']':
                 width = 6;
                 break;
             case '｛':
+            case '{':
                 width = 8;
                 break;
             case '｝':
+            case '}':
                 width = 8;
                 break;
             case '＋':
+            case '+':
                 width = 10;
                 break;
             case '－':
+            case '-':
                 width = 7;
                 break;
             case '±':
@@ -1613,223 +1633,293 @@ public class PanelBLine extends javax.swing.JPanel {
                 break;
 
             case '＜':
+            case '<':
                 width = 10;
                 break;
             case '＞':
+            case '>':
                 width = 10;
                 break;
             case '′':
+            case '\'':
                 width = 4;
                 break;
             case '″':
+            case '\"':
                 width = 8;
                 break;
             case '％':
                 width = 12;
                 break;
             case '＃':
+            case '#':
                 width = 10;
                 break;
             case '＆':
+            case '&':
                 width = 9;
                 break;
             case '＊':
+            case '*':
                 width = 8;
                 break;
             case '＠':
+            case '@':
                 width = 10;
                 break;
             case '０':
+            case '0':
                 width = 9;
                 break;
 
             case '１':
+            case '1':
                 width = 9;
                 break;
             case '２':
+            case '2':
                 width = 9;
                 break;
             case '３':
+            case '3':
                 width = 9;
                 break;
             case '４':
+            case '4':
                 width = 9;
                 break;
             case '５':
+            case '5':
                 width = 9;
                 break;
             case '６':
+            case '6':
                 width = 9;
                 break;
             case '７':
+            case '7':
                 width = 9;
                 break;
             case '８':
+            case '8':
                 width = 9;
                 break;
             case '９':
+            case '9':
                 width = 9;
                 break;
             case 'Ａ':
+            case 'A':
                 width = 9;
                 break;
 
             case 'Ｂ':
+            case 'B':
                 width = 9;
                 break;
             case 'Ｃ':
+            case 'C':
                 width = 8;
                 break;
             case 'Ｄ':
+            case 'D':
                 width = 9;
                 break;
             case 'Ｅ':
+            case 'E':
                 width = 9;
                 break;
             case 'Ｆ':
+            case 'F':
                 width = 9;
                 break;
             case 'Ｇ':
+            case 'G':
                 width = 9;
                 break;
             case 'Ｈ':
+            case 'H':
                 width = 9;
                 break;
             case 'Ｉ':
+            case 'I':
                 width = 8;
                 break;
             case 'Ｊ':
+            case 'J':
                 width = 9;
                 break;
             case 'Ｋ':
+            case 'K':
                 width = 9;
                 break;
 
             case 'Ｌ':
+            case 'L':
                 width = 9;
                 break;
             case 'Ｍ':
+            case 'M':
                 width = 9;
                 break;
             case 'Ｎ':
+            case 'N':
                 width = 9;
                 break;
             case 'Ｏ':
+            case 'O':
                 width = 9;
                 break;
             case 'Ｐ':
+            case 'P':
                 width = 9;
                 break;
             case 'Ｑ':
+            case 'Q':
                 width = 9;
                 break;
             case 'Ｒ':
+            case 'R':
                 width = 9;
                 break;
             case 'Ｓ':
+            case 'S':
                 width = 9;
                 break;
             case 'Ｔ':
+            case 'T':
                 width = 9;
                 break;
             case 'Ｕ':
+            case 'U':
                 width = 9;
                 break;
 
             case 'Ｖ':
+            case 'V':
                 width = 9;
                 break;
             case 'Ｗ':
+            case 'W':
                 width = 10;
                 break;
             case 'Ｘ':
+            case 'X':
                 width = 9;
                 break;
             case 'Ｙ':
+            case 'Y':
                 width = 8;
                 break;
             case 'Ｚ':
+            case 'Z':
                 width = 9;
                 break;
             case 'ａ':
+            case 'a':
                 width = 9;
                 break;
             case 'ｂ':
+            case 'b':
                 width = 9;
                 break;
             case 'ｃ':
+            case 'c':
                 width = 8;
                 break;
             case 'ｄ':
+            case 'd':
                 width = 9;
                 break;
             case 'ｅ':
+            case 'e':
                 width = 9;
                 break;
 
             case 'ｆ':
+            case 'f':
                 width = 9;
                 break;
             case 'ｇ':
+            case 'g':
                 width = 9;
                 break;
             case 'ｈ':
+            case 'h':
                 width = 9;
                 break;
             case 'ｉ':
+            case 'i':
                 width = 4;
                 break;
             case 'ｊ':
+            case 'j':
                 width = 6;
                 break;
             case 'ｋ':
+            case 'k':
                 width = 8;
                 break;
             case 'ｌ':
+            case 'l':
                 width = 4;
                 break;
             case 'ｍ':
+            case 'm':
                 width = 10;
                 break;
             case 'ｎ':
+            case 'n':
                 width = 9;
                 break;
             case 'ｏ':
+            case 'o':
                 width = 9;
                 break;
 
             case 'ｐ':
+            case 'p':
                 width = 9;
                 break;
             case 'ｑ':
+            case 'q':
                 width = 9;
                 break;
             case 'ｒ':
+            case 'r':
                 width = 9;
                 break;
             case 'ｓ':
+            case 's':
                 width = 9;
                 break;
             case 'ｔ':
+            case 't':
                 width = 9;
                 break;
             case 'ｕ':
+            case 'u':
                 width = 9;
                 break;
             case 'ｖ':
+            case 'v':
                 width = 9;
                 break;
             case 'ｗ':
+            case 'w':
                 width = 10;
                 break;
             case 'ｘ':
+            case 'x':
                 width = 8;
                 break;
             case 'ｙ':
+            case 'y':
                 width = 9;
                 break;
 
             case 'ｚ':
+            case 'z':
                 width = 9;
                 break;
             case 'Ω':
