@@ -1216,6 +1216,7 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
                         newChar = ',';
                         break;
                     case '−':
+                    case '－':
                         newChar = '-';
                         break;
                     case '．':
