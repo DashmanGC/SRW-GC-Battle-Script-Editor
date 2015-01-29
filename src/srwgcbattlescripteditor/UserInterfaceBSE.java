@@ -1382,6 +1382,8 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         panelLines.setPreferredSize(new Dimension(panelLines.getWidth() - 20, totalHeight));
         panelLines.repaint();
         //scrollLines.repaint();
+        panelLines.setVisible(false);
+        panelLines.setVisible(true);
     }
 
 
