@@ -1165,8 +1165,15 @@ public class UserInterfaceBSE extends javax.swing.JFrame {
         char char_z = 'ｚ';
         char char_A = 'Ａ';
         char char_Z = 'Ｚ';
+        char char_0 = '０';
+        char char_9 = '９';
         
-        if (c >= char_A && c <= char_Z){
+        if (c >= char_0 && c <= char_9){
+            int difference = c - char_0;
+            newChar = '0';
+            newChar += difference;
+        }
+        else if (c >= char_A && c <= char_Z){
             int difference = c - char_A;
             newChar = 'A';
             newChar += difference;
